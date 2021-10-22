@@ -1,18 +1,18 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import unittest
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
-        self.browser.quit()
+        #self.browser.quit()
+        pass
 
     def check_for_row_in_list_table(self, row_text):
-        print('000')
         table = self.browser.find_element_by_id('id_list_table')
         rows = self.browser.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
@@ -20,7 +20,7 @@ class NewVisitorTest(unittest.TestCase):
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Edyta dowiedziała się o nowej, wspaniałej aplikacji w postaci listy rzeczy do zrobienia.
         # Postanowia więc przejść na stronę główną tej aplikacji.
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # Zwróciła uwagę, że tytuł strony i nagłówek zawierają słowo "Listy", "lista".
         self.assertIn('Listy', self.browser.title)
@@ -60,7 +60,4 @@ class NewVisitorTest(unittest.TestCase):
 
         # Przechodzi pod podany adres URL i widzi wyświetloną swoją listę rzeczy do zrobienia.
 
-        # Edyta kończy używanie aplikacji, na dziś wystarczy.
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
+        # Edyta kończy używanie aplikacji na dziś.
