@@ -13,6 +13,7 @@ class NewVisitorTest(LiveServerTestCase):
         pass
 
     def check_for_row_in_list_table(self, row_text):
+        #print('wywołano "check_for_row..."')
         table = self.browser.find_element_by_id('id_list_table')
         rows = self.browser.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
@@ -20,7 +21,7 @@ class NewVisitorTest(LiveServerTestCase):
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Edyta dowiedziała się o nowej, wspaniałej aplikacji w postaci listy rzeczy do zrobienia.
         # Postanowia więc przejść na stronę główną tej aplikacji.
-        self.browser.get(self.live_server_url)
+        self.browser.get('http://127.0.0.1:8000')
 
         # Zwróciła uwagę, że tytuł strony i nagłówek zawierają słowo "Listy", "lista".
         self.assertIn('Listy', self.browser.title)
@@ -41,10 +42,13 @@ class NewVisitorTest(LiveServerTestCase):
         # Po naciśnięciu klawisza Enter strona została uaktalniona i wyświela
         # "1: Kupić pawie pióra" jako element listy rzeczy do zrobienia.
         inputbox.send_keys(Keys.ENTER)
+        edith_list_url = self.browser.current_url
+        self.assertRegex(edith_list_url, 'lists/.+')
         self.check_for_row_in_list_table('1: Kupić pawie pióra')
 
         # Na stronie nadal znajduje się pole tekstowe zachęcające do podania kolejnego zadania.
         # Edyta wpisała "Zrobić przynęty z pawich piór"
+        self.browser.refresh()
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Zrobić przynęty z pawich piór')
         inputbox.send_keys(Keys.ENTER)
@@ -53,11 +57,34 @@ class NewVisitorTest(LiveServerTestCase):
         self.check_for_row_in_list_table('1: Kupić pawie pióra')
         self.check_for_row_in_list_table('2: Zrobić przynęty z pawich piór')
 
-        # Edyta była ciekawa, czy witryna zapamięta jej listę. 
-	# Zwróciłą uwagę na wygenerowany dla niej unikatowy adres URL, 
-	# obok którego znajduje się pewien tekst z wyjaśnieniem.
+        # Teraz nowy użytkownik Franek zaczyna korzystać z wityryny.
+
+        ## Używamy nowej sesji przegladarki internetowej, aby miec pewność, że żadne
+        ## inrofmacje dotyczące Edyty nie zostaną ujawnione, na przykład przez cookies.
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        # Franek odwiedza stronę główną.
+        # Nie znajduje żadnych śladów listy Edyty.
+        self.browser.get('http://127.0.0.1:8000')
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Kupić pawie pióra', page_text)
+        self.assertNotIn('przynęty', page_text)
+
+        # Franek tworzy nową listę, wprowadzając nowy element.
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Kupić mleko')
+        inputbox.send_keys(Keys.ENTER)
+
+        # Franek otrzymuje unikatowy adres URL prowadzący do listy.
+        francis_list_url = self.browser.current_url
+        self.assertRegex(francis_list_url, '/lists/.+')
+        self.assertNotEqual(francis_list_url, edith_list_url)
+
+        # Ponownie nie ma żadnego śladu po liście Edyty.
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Kupić pawie pióra', page_text)
+        self.assertIn('Kupić mleko', page_text)
+
+        # Franek kończy korzystanie z aplikacji.
         self.fail('Zakończenie testu!')
-
-        # Przechodzi pod podany adres URL i widzi wyświetloną swoją listę rzeczy do zrobienia.
-
-        # Edyta kończy używanie aplikacji na dziś.
