@@ -1,6 +1,7 @@
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import time
 
 class NewVisitorTest(LiveServerTestCase):
 
@@ -42,13 +43,15 @@ class NewVisitorTest(LiveServerTestCase):
         # Po naciśnięciu klawisza Enter strona została uaktalniona i wyświela
         # "1: Kupić pawie pióra" jako element listy rzeczy do zrobienia.
         inputbox.send_keys(Keys.ENTER)
+        print('1:', self.browser.current_url)
+        time.sleep(1)
         edith_list_url = self.browser.current_url
+        print('2:', edith_list_url)
         self.assertRegex(edith_list_url, 'lists/.+')
         self.check_for_row_in_list_table('1: Kupić pawie pióra')
 
         # Na stronie nadal znajduje się pole tekstowe zachęcające do podania kolejnego zadania.
-        # Edyta wpisała "Zrobić przynęty z pawich piór"
-        self.browser.refresh()
+        # Edyta wpisała "Zrobić przynęty z pawich piór" 
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Zrobić przynęty z pawich piór')
         inputbox.send_keys(Keys.ENTER)
