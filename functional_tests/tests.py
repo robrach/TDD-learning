@@ -27,7 +27,7 @@ class NewVisitorTest(LiveServerTestCase):
         # Zwróciła uwagę, że tytuł strony i nagłówek zawierają słowo "Listy", "lista".
         self.assertIn('Listy', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertIn('lista', header_text)
+        self.assertIn('list', header_text)
 
         # Od razu zostaje zachęcona, aby wpisać rzecz do zrobienia.
         inputbox = self.browser.find_element_by_id('id_new_item')
@@ -57,6 +57,7 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
 
         # Strona została ponownie auaktualniona i teraz wyświetla dwa elementy na liście rzeczy do zrobienia.
+        time.sleep(1)
         self.check_for_row_in_list_table('1: Kupić pawie pióra')
         self.check_for_row_in_list_table('2: Zrobić przynęty z pawich piór')
 
@@ -80,6 +81,7 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
 
         # Franek otrzymuje unikatowy adres URL prowadzący do listy.
+        time.sleep(1)
         francis_list_url = self.browser.current_url
         self.assertRegex(francis_list_url, '/lists/.+')
         self.assertNotEqual(francis_list_url, edith_list_url)

@@ -3,8 +3,8 @@
 		<title>Listy rzeczy do zrobienia</title>
 	</head>
 	<body>
-		<h1>Utwórz nową listę rzeczy do zrobienia</h1>
-		<form method="POST">
+		<h1>Twoja lista rzeczy do zrobienia</h1>
+		<form method="POST" action="/">
 			<input name="item_text" id="id_new_item" placeholder="Wpisz rzecz do zrobienia">
 			{% csrf_token %}
 		</form>
