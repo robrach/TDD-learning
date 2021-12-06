@@ -1,5 +1,6 @@
 from django.conf.urls import include, url
 from django.contrib import admin
+import lists
 
 urlpatterns = [
     # Examples:
@@ -12,3 +13,4 @@ urlpatterns = [
     url(r'^lists/new$', 'lists.views.new_list', name='new_list'),
     # url(r'^admin/', include(admin.site.urls)),
 ]
+
