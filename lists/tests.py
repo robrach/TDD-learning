@@ -126,7 +126,7 @@ class NewItemTest(TestCase):
             data={'item_text': 'Nowy element dla istniejącej listy'}
         )
 
-        # self.assertEqual(Item.objects.count(), 1)
+        self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'Nowy element dla istniejącej listy')
         self.assertEqual(new_item.list, correct_list)
