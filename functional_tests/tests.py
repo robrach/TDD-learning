@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 
+
 class NewVisitorTest(StaticLiveServerTestCase):
 
     def setUp(self):
@@ -10,11 +11,10 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.browser.implicitly_wait(3)
 
     def tearDown(self):
-        #self.browser.quit()
+        self.browser.quit()
         pass
 
     def check_for_row_in_list_table(self, row_text):
-        #print('wywołano "check_for_row..."')
         table = self.browser.find_element_by_id('id_list_table')
         rows = self.browser.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
