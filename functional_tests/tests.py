@@ -2,9 +2,24 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
+import sys
 
 
 class NewVisitorTest(StaticLiveServerTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                cls.server_url = 'http://' + arg.split('=')[1]
+                return
+        super().setUpClass()
+        cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.server_url == cls.live_server_url:
+            super().tearDownClass()
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -12,7 +27,6 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
-        pass
 
     def check_for_row_in_list_table(self, row_text):
         table = self.browser.find_element_by_id('id_list_table')
@@ -22,7 +36,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Edyta dowiedziała się o nowej, wspaniałej aplikacji w postaci listy rzeczy do zrobienia.
         # Postanowia więc przejść na stronę główną tej aplikacji.
-        self.browser.get('http://127.0.0.1:8000')
+        self.browser.get(self.server_url)
 
         # Zwróciła uwagę, że tytuł strony i nagłówek zawierają słowo "Listy", "lista".
         self.assertIn('Listy', self.browser.title)
@@ -70,7 +84,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
         # Franek odwiedza stronę główną.
         # Nie znajduje żadnych śladów listy Edyty.
-        self.browser.get('http://127.0.0.1:8000')
+        self.browser.get(self.server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Kupić pawie pióra', page_text)
         self.assertNotIn('przynęty', page_text)
@@ -96,7 +110,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
     def test_layout_and_styling(self):
         # Edyta przeszła na stronę główną.
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         self.browser.set_window_size(1024, 768)
 
         # Zauważyła, że pole tekstowe zostało elegancko wyśrodkowane.
